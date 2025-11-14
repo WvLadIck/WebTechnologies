@@ -1,72 +1,86 @@
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
 a {
     text-decoration: none;
     font-family: "Fira Sans Condensed", sans-serif;
-    font-size: 30px;
-    color: black;
+    font-size: 25px;
+    color: white;
 }
 
-a:hover{
+a:hover {
     color: orange;
 }
+
 
 p, li, td {
     font-family: "Fira Sans Condensed", sans-serif;
     font-size: 25px;
     color: black;
+    margin: 5px 0px 5px 20px;
 }
 
 h1 {
     font-family: "Fira Sans Condensed", sans-serif;
     font-size: 50px;
-    color: rgb(255, 255, 255);
+    color: white;
 }
-
 
 h2 {
     font-family: "Fira Sans Condensed", sans-serif;
     font-size: 35px;
     color: black;
-}   
+    margin: 5px 0px 0px 0px;
+}
 
 #MainPhoto {
     width: 1000px;
+    height: auto;
+    margin-bottom: 5px;
 }
 
-#footer {
-    background-color: rgb(100, 100, 100);
-    margin: 0px;
-    padding: 10px;
-    box-sizing: border-box;
+header, footer, main, nav {
+    padding: 15px;
+    margin: 0;
 }
 
 #header {
-    background-color: rgb(100, 100, 100);
-    margin: 0px;
-    padding: 10px;
-    box-sizing: border-box;
+    background-color: black;
+    color: white;
 }
 
-#main {
-    margin: 0px;
-    padding: 10px;
-    box-sizing: border-box;
+nav {
+    margin-top: 10px;
+    display: flex;
+    gap: 25px;
 }
 
-.footer_text, .header_text {
-    font-family: "Fira Sans Condensed", sans-serif;
-    font-size: 25px;
-    color: rgb(255, 255, 255);
+#footer {
+    background-color: black;
+    color: white;
 }
+
 
 table, th, td {
     padding: 15px;
-    border: 1px solid rgb(0, 0, 0);
+    border: 1px solid black;
     border-collapse: collapse;
     text-align: center;
+    font-family: "Fira Sans Condensed", sans-serif;
 }
 
 .MainTableStr {
     font-weight: bold;
+    background-color: #f2f2f2;
 }
 
-
+.header_text, .footer_text {
+    font-family: "Fira Sans Condensed", sans-serif;
+    font-size: 25px;
+    color: white;
+}
