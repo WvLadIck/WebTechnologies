@@ -39,7 +39,7 @@ h2 {
 }
 
 #MainPhoto {
-    width: 1000px;
+    width: 800px;
     height: auto;
     margin-bottom: 5px;
 }
@@ -84,3 +84,61 @@ table, th, td {
     font-size: 25px;
     color: white;
 }
+
+
+@media (max-width: 800px) {
+
+    #MainPhoto {
+        width: 500px;
+        height: auto;
+    }
+    nav {
+        display: flex;
+        justify-content: space-between; 
+        gap: 0; 
+    }
+    h1 {
+        text-align: center;
+    }
+}
+
+
+
+@media (max-width: 600px) {
+
+    nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    a,
+    .header_text,
+    .footer_text {
+        font-size: 29px;
+    }
+    #MainPhoto {
+        width: 100%;
+    }
+
+    table, th, td {
+        font-size: 23px;
+    }
+}
+
+
+
+@media (max-width: 400px) {
+
+    table, th, td {
+        font-size: 21px;
+    }
+
+    table {
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
