@@ -287,6 +287,10 @@ input:invalid, textarea:invalid, select:invalid {
     border-color: orange;
 }
 
+#customer-name, #customer-email, #customer-phone, #customer-address, #delivery-time{
+    border-color: orange;
+}
+
 
 
 
@@ -367,4 +371,3 @@ input:invalid, textarea:invalid, select:invalid {
     }
 }
 
-}
