@@ -4,21 +4,222 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MealRush</title>
+
+    <link rel="stylesheet" href="styleMakeLunch.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <header>
+
+    <header id="header">
         <h1>MealRush</h1>
+
         <nav>
-            <a href="index.html">О нас</a>
-            <a href="MakeLunch.html">Собрать ланч</a>
-            <a href="Order.html">Заказы</a>
-            <a href="#footer">Контакты</a>
+            <a href="index.html" class="header_text">О нас</a>
+            <a href="MakeLunch.html" class="header_text">Собрать ланч</a>
+            <a href="Order.html" class="header_text">Заказы</a>
+            <a href="#footer" class="header_text">Контакты</a>
         </nav>
     </header>
 
+    <main id="main">
+        <section class="meal-section">
+            <h2>Супы</h2>
+
+            <div class="meal-grid">
+
+                <div class="meal-card">
+                    <img src="images/soup1.jpg" alt="Суп №1">
+                    <p class="meal-price">250 ₽</p>
+                    <p class="meal-name">Куриный крем-суп</p>
+                    <p class="meal-weight">300 мл</p>
+                    <button>Добавить</button>
+                </div>
+
+                <div class="meal-card">
+                    <img src="images/soup2.jpg" alt="Суп №2">
+                    <p class="meal-price">270 ₽</p>
+                    <p class="meal-name">Сырный суп с гренками</p>
+                    <p class="meal-weight">320 мл</p>
+                    <button>Добавить</button>
+                </div>
+
+                <div class="meal-card">
+                    <img src="images/soup3.jpg" alt="Суп №3">
+                    <p class="meal-price">300 ₽</p>
+                    <p class="meal-name">Томатный суп с базиликом</p>
+                    <p class="meal-weight">300 мл</p>
+                    <button>Добавить</button>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="meal-section">
+            <h2>Главные блюда</h2>
+
+            <div class="meal-grid">
+
+                <div class="meal-card">
+                    <img src="images/dish1.jpg" alt="Блюдо №1">
+                    <p class="meal-price">420 ₽</p>
+                    <p class="meal-name">Курица терияки с рисом</p>
+                    <p class="meal-weight">350 г</p>
+                    <button>Добавить</button>
+                </div>
+
+                <div class="meal-card">
+                    <img src="images/dish2.jpg" alt="Блюдо №2">
+                    <p class="meal-price">480 ₽</p>
+                    <p class="meal-name">Паста альфредо с грибами</p>
+                    <p class="meal-weight">320 г</p>
+                    <button>Добавить</button>
+                </div>
+
+                <div class="meal-card">
+                    <img src="images/dish3.jpg" alt="Блюдо №3">
+                    <p class="meal-price">510 ₽</p>
+                    <p class="meal-name">Стейк из говядины</p>
+                    <p class="meal-weight">280 г</p>
+                    <button>Добавить</button>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="meal-section">
+            <h2>Напитки</h2>
+
+            <div class="meal-grid">
+
+                <div class="meal-card">
+                    <img src="images/drink1.jpg" alt="Напиток №1">
+                    <p class="meal-price">150 ₽</p>
+                    <p class="meal-name">Морс ягодный</p>
+                    <p class="meal-weight">250 мл</p>
+                    <button>Добавить</button>
+                </div>
+
+                <div class="meal-card">
+                    <img src="images/drink2.jpg" alt="Напиток №2">
+                    <p class="meal-price">180 ₽</p>
+                    <p class="meal-name">Лимонад цитрусовый</p>
+                    <p class="meal-weight">300 мл</p>
+                    <button>Добавить</button>
+                </div>
+
+                <div class="meal-card">
+                    <img src="images/drink3.jpg" alt="Напиток №3">
+                    <p class="meal-price">120 ₽</p>
+                    <p class="meal-name">Холодный чай</p>
+                    <p class="meal-weight">250 мл</p>
+                    <button>Добавить</button>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+     <section class="order-section" aria-labelledby="order-title">
+        <div class="order-container">
+            <div class="order-preview">
+                <img src="images/logo.jpg" alt="MealRush preview">
+            </div>
+
+            <div class="order-form-block">
+                <h2 id="order-title">Оформить заказ</h2>
+
+                <form action="https://httpbin.org/post" method="post" id="order-form" novalidate>
+                    <div class="order-columns">
+
+                        <fieldset class="order-col order-items" aria-labelledby="items-title">
+                            <legend id="items-title" class="visually-hidden">Ваш заказ</legend>
+
+                            <h3 class="col-title">Ваш заказ</h3>
+
+                            <label for="soup-select">Суп</label>
+                            <select id="soup-select" name="soup" required>
+                                <option value="">Выберите суп</option>
+                                <option value="chicken_cream">Куриный крем-суп</option>
+                                <option value="cheese_garlic">Сырный суп с гренками</option>
+                                <option value="tomato_basil">Томатный суп с базиликом</option>
+                            </select>
+
+                            <label for="main-select">Главное блюдо</label>
+                            <select id="main-select" name="main_dish" required>
+                                <option value="">Выберите главное блюдо</option>
+                                <option value="teriyaki_chicken">Курица терияки с рисом</option>
+                                <option value="pasta_alfredo">Паста альфредо с грибами</option>
+                                <option value="beef_steak">Стейк из говядины</option>
+                            </select>
+
+                            <label for="drink-select">Напиток</label>
+                            <select id="drink-select" name="drink" required>
+                                <option value="">Выберите напиток</option>
+                                <option value="berry_mors">Морс ягодный</option>
+                                <option value="citrus_lemonade">Лимонад цитрусовый</option>
+                                <option value="iced_tea">Холодный чай</option>
+                            </select>
+
+                            <label for="comment">Комментарий к заказу</label>
+                            <textarea id="comment" name="comment" rows="4" placeholder="Добавьте пожелания (при необходимости)"></textarea>
+                        </fieldset>
+
+                        <fieldset class="order-col order-customer" aria-labelledby="customer-title">
+                            <legend id="customer-title" class="visually-hidden">Данные клиента</legend>
+
+                            <h3 class="col-title">Данные клиента</h3>
+
+                            <label for="customer-name">Имя</label>
+                            <input id="customer-name" name="name" type="text" required placeholder="Иван Иванов">
+
+                            <label for="customer-email">Email</label>
+                            <input id="customer-email" name="email" type="email" required placeholder="ivan@example.com">
+
+                            <div class="checkbox-row">
+                                <input id="subscribe" name="subscribe" type="checkbox" checked>
+                                <label for="subscribe">Подписаться на рассылку</label>
+                            </div>
+
+                            <label for="customer-phone">Телефон</label>
+                            <input id="customer-phone" name="phone" type="tel" required placeholder="+7 900 000 00 00">
+
+                            <label for="customer-address">Адрес доставки</label>
+                            <input id="customer-address" name="address" type="text" required placeholder="Улица, дом, подъезд">
+
+                            <p class="delivery-choice-label">Выберите способ доставки:</p>
+                            <div class="radio-row">
+                                <input id="deliver-now" name="delivery_mode" type="radio" value="now" required>
+                                <label for="deliver-now">Доставить как можно быстрее</label>
+
+                                <input id="deliver-scheduled" name="delivery-mode" type="radio" value="scheduled" required>
+                                <label for="deliver-scheduled">Назначить время</label>
+                            </div>
+
+                            <label for="delivery-time">Время доставки</label>
+                            <input id="delivery-time" name="delivery_time" type="time" required min="07:00" max="23:00" step="300">
+
+                            <div class="form-buttons">
+                                <button type="reset" class="btn-reset">Сбросить</button>
+                                <button type="submit" class="btn-submit">Отправить заказ</button>
+                            </div>
+                        </fieldset>
+
+                    </div> 
+                </form>
+            </div>
+        </div>
+    </section>
 
     <footer id="footer">
-        <p>Телефон: +7 (225) 345 73</p>
+        <p class="footer_text">
+            Телефон: <a href="tel:+72253457777" class="footer_text">+7 (225) 345-77-77</a>
+        </p>
     </footer>
+
 </body>
+<script src="mealrush.js"></script>
 </html>
