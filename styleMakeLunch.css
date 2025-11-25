@@ -1,0 +1,282 @@
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Fira Sans Condensed', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f9f9f9;
+}
+h1 {
+    font-family: "Fira Sans Condensed", sans-serif;
+    font-size: 50px;
+    color: white;
+}
+
+h2 {
+    font-family: "Fira Sans Condensed", sans-serif;
+    font-size: 35px;
+    color: black;
+    margin: 5px 0px 0px 0px;
+}
+a {
+    text-decoration: none;
+    font-family: "Fira Sans Condensed", sans-serif;
+    font-size: 25px;
+    color: white;
+}
+
+a:hover {
+    color: orange;
+}
+#MainPhoto {
+    width: 800px;
+    height: auto;
+    margin-bottom: 5px;
+}
+
+header, footer, main, nav {
+    padding: 15px;
+    margin: 0;
+}
+
+#header {
+    background-color: black;
+    color: white;
+}
+
+nav {
+    margin-top: 10px;
+    display: flex;
+    gap: 25px;
+}
+
+.meal-section {
+    padding: 20px 30px;
+}
+
+.meal-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.meal-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.meal-card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.meal-card button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: orange;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.meal-card button:hover {
+    background: orange;
+}
+
+.filter-buttons {
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    background: #fff;
+    border: 1px solid orange;
+    border-radius: 6px;
+    color: orange;
+    padding: 5px 10px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+    background: orange;
+    color: #fff;
+}
+
+.order-section {
+    background: #fff;
+    padding: 30px;
+    margin-top: 30px;
+}
+
+.order-columns {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.order-col {
+    flex: 1;
+    min-width: 250px;
+    border: none;
+}
+
+.order-col label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 500;
+    
+}
+
+.order-col select,
+.order-col input,
+.order-col textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.btn-reset, .btn-submit {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.btn-reset {
+    background: #ccc;
+}
+
+.btn-submit {
+    background: orange;
+    color: #fff;
+}
+
+#total-price-block {
+    margin-top: 15px;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+#footer {
+    background-color: black;
+    color: white;
+    font-family: "Fira Sans Condensed", sans-serif;
+    font-size: 25px;
+    margin: 5px 0px 5px 20px;
+}
+
+
+
+
+
+
+
+
+@media (max-width: 800px) {
+
+    .meal-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    nav {
+        justify-content: space-between;
+    }
+    .order-container {
+        grid-template-columns: 1fr;
+    }
+    .meal-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    width: 650px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .order-preview {
+        order: 2;
+    }
+    .order-form-block {
+        order: 1;
+    }
+    .order-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    h1 {
+        text-align: center;
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .meal-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    width: 550px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    nav a {
+        font-size: 29px;
+    }
+
+    .meal-section h2 {
+        text-align: center;
+    }
+
+    .meal-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 400px) {
+
+    td, th {
+        font-size: 23px;
+    }
+
+    .MainTableStr td, .MainTableStr th {
+        font-size: 21px; 
+    }
+
+        .order-form-block {
+        padding: 16px;
+    }
+    .order-form-block h2 {
+        font-size: 22px;
+    }
+    .order-col input[type="text"],
+    .order-col input[type="email"],
+    .order-col input[type="tel"],
+    .order-col input[type="time"],
+    .order-col select,
+    .order-col textarea {
+        font-size: 14px;
+    }
+    .btn-reset,
+    .btn-submit {
+        font-size: 14px;
+        padding: 8px 14px;
+    }
+}
+
