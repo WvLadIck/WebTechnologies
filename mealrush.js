@@ -129,4 +129,62 @@ Object.values(selects).forEach(sel => sel.addEventListener('change', updateTotal
 form.addEventListener('reset', () => {
     setTimeout(updateTotal, 0);
 });
+
+const forma = document.getElementById("order-form");
+
+function showNotification(message) {
+  const notif = document.createElement("div");
+  notif.className = "order-notification";
+  notif.innerHTML = `
+    <div class="notif-content">
+      <p>${message}</p>
+      <button class="notif-ok">Окей</button>
+    </div>
+  `;
+  document.body.appendChild(notif);
+
+  const okBtn = notif.querySelector(".notif-ok");
+  okBtn.addEventListener("click", () => {
+    notif.remove();
+  });
+}
+
+// CSS для уведомления через JS (можно добавить в style)
+const styleNotif = document.createElement("style");
+document.head.appendChild(styleNotif);
+
+// Валидация заказа
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const selected = {
+    soup: selects.soup.value,
+    main: selects.main.value,
+    salad: selects.salad.value,
+    drink: selects.drink.value,
+    dessert: selects.dessert.value
+  };
+
+  let message = "";
+
+  // Проверка по условиям из ТЗ
+  const nothingSelected = Object.values(selected).every(v => !v);
+  if (nothingSelected) message = "Ничего не выбрано. Выберите блюда для заказа";
+  else if (!selected.drink && (selected.soup || selected.main || selected.salad)) message = "Выберите напиток";
+  else if (!selected.main && !selected.salad && selected.soup) message = "Выберите главное блюдо/салат/стартер";
+  else if (!selected.soup && !selected.main && selected.salad) message = "Выберите суп или главное блюдо";
+  else if (!selected.main && (selected.drink || selected.dessert)) message = "Выберите главное блюдо";
+
+  if (message) {
+    showNotification(message);
+    return; // блокируем отправку формы
+  }
+
+  // Всё ок, можно отправлять
+  form.submit();
+});
+
+
 updateTotal();
+
+
