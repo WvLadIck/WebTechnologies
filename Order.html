@@ -1,23 +1,367 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MealRush</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Оформление заказа — MealRush</title>
+  <link rel="stylesheet" href="styleMakeLunch.css">
+  <link rel="stylesheet" href="order.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>MealRush</h1>
-        <nav>
-            <a href="index.html">О нас</a>
-            <a href="MakeLunch.html">Собрать ланч</a>
-            <a href="Order.html">Заказы</a>
-            <a href="#footer">Контакты</a>
-        </nav>
-    </header>
+  <header id="header">
+    <h1>MealRush</h1>
+    <nav>
+        <a href="index.html" class="header_text">О нас</a>
+        <a href="MakeLunch.html" class="header_text">Собрать ланч</a>
+        <a href="Order.html" class="header_text">Оформить заказ</a>
+        <a href="#footer" class="header_text">Контакты</a>
+    </nav>
+  </header>
 
-    <footer id="footer">
-        <p>Телефон: +7 (225) 345 73</p>
-    </footer>
+  <main class="order-page">
+    <h2>Оформление заказа</h2>
+    <div class="order-layout">
+      <section class="order-composition" id="composition">
+        <h3>Состав заказа</h3>
+        <div id="composition-list" class="composition-list"></div>
+      </section>
+
+      <section class="order-form-block">
+        <h3>Оформление заказа</h3>
+
+        <div class="selected-preview" id="selected-preview"></div>
+
+        <form id="place-order-form" novalidate>
+          <label>API Key (используется тестовый ключ)</label>
+          <input id="api-key" type="text" value="71950085-e236-4db2-b3e7-35495a8c084c" required>
+
+          <label>Имя</label>
+          <input id="full_name" type="text" required placeholder="Иван Иванов">
+
+          <label>Email</label>
+          <input id="email" type="email" required placeholder="ivan@example.com">
+
+          <div style="display:flex;gap:8px;align-items:center;margin:8px 0">
+            <label for="subscribe">Подписка</label>
+            <input id="subscribe" type="checkbox" checked>
+          </div>
+
+          <label>Телефон</label>
+          <input id="phone" type="tel" required placeholder="+7 900 000 00 00">
+
+          <label>Адрес доставки</label>
+          <input id="address" type="text" required placeholder="Улица, дом, подъезд">
+
+          <p style="margin-top:10px;margin-bottom:6px;">Доставка</p>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+            <label><input name="delivery_type" type="radio" value="now" checked> Как можно быстрее</label>
+            <label><input name="delivery_type" type="radio" value="by_time"> Назначить время</label>
+          </div>
+
+          <label>Время доставки</label>
+          <input id="delivery_time" type="time" min="07:00" max="23:00" step="300">
+
+          <label>Комментарий</label>
+          <textarea id="comment" rows="3" placeholder="Пожелания"></textarea>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button type="button" id="btn-reset-order" style="background:#ccc;">Сбросить</button>
+            <button type="submit" id="btn-send-order" style="background:orange;color:#fff;">Отправить</button>
+          </div>
+
+          <div id="submit-message" class="submit-result"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer id="footer">
+    <p class="footer_text">Телефон: <a href="tel:+72253457777" class="footer_text">+7 (225) 345-77-77</a></p>
+  </footer>
+
+<script>
+/* Order.html script:
+   - загружает блюда с API
+   - показывает состав заказа (берёт идентификаторы из localStorage)
+   - позволяет удалить позицию (и обновить localStorage)
+   - формирует тело запроса и отправляет POST /labs/api/orders?api_key=...
+*/
+
+const STORAGE_KEY = "mealrush_selected";
+const API_BASE = "https://edu.std-900.ist.mospolytech.ru";
+const API_KEY_DEFAULT = document.getElementById ? (document.getElementById('api-key')?.value || '') : '';
+
+let meals = [];
+
+function readStoredSelection() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { soup: "", main: "", salad: "", drink: "", dessert: "" };
+        return Object.assign({ soup: "", main: "", salad: "", drink: "", dessert: "" }, JSON.parse(raw));
+    } catch (e) {
+        console.error(e);
+        return { soup: "", main: "", salad: "", drink: "", dessert: "" };
+    }
+}
+function writeStoredSelection(obj) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+}
+
+function getImageUrl(path) {
+    if (!path) return "images/noimage.jpg";
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
+    if (path.startsWith("/")) return API_BASE + path;
+    return API_BASE + "/" + path;
+}
+
+async function fetchDishes() {
+    try {
+        const res = await fetch(API_BASE + "/labs/api/dishes");
+        if (!res.ok) throw new Error("Ошибка загрузки блюд");
+        const data = await res.json();
+        meals = data.map(item => ({
+            id: item.keyword || (item.name && item.name.toLowerCase().replace(/\s+/g,"_")) || String(Math.random()),
+            name: item.name,
+            price: Number(item.price),
+            weight: item.count || item.weight || "",
+            image: item.image,
+            category: item.category,
+            kind: item.kind,
+            numericId: item.id !== undefined ? Number(item.id) : (item.dish_id !== undefined ? Number(item.dish_id) : null)
+        }));
+    } catch (e) {
+        console.error(e);
+        alert("Не удалось загрузить блюда с сервера.");
+    }
+}
+
+function findMealByKeyword(kw) {
+    return meals.find(m => m.id === kw) || null;
+}
+
+function renderComposition() {
+    const container = document.getElementById("composition-list");
+    container.innerHTML = "";
+    const stored = readStoredSelection();
+    const layout = [
+        { key: "soup", title: "Суп" },
+        { key: "main", title: "Главное блюдо" },
+        { key: "salad", title: "Салат" },
+        { key: "drink", title: "Напиток" },
+        { key: "dessert", title: "Десерт" }
+    ];
+    const anySelected = Object.values(stored).some(v => !!v);
+    if (!anySelected) {
+        container.innerHTML = '<div class="empty-note">Ничего не выбрано. Чтобы добавить блюда в заказ, перейдите на страницу <a href="MakeLunch.html">Собрать ланч</a>.</div>';
+        document.getElementById("selected-preview").innerHTML = "";
+        return;
+    }
+    layout.forEach(item => {
+        const kw = stored[item.key];
+        const meal = kw ? findMealByKeyword(kw) : null;
+        const div = document.createElement("div");
+        div.className = "comp-card";
+        if (meal) {
+            const img = document.createElement("img");
+            img.src = getImageUrl(meal.image);
+            img.alt = meal.name;
+            div.appendChild(img);
+            const meta = document.createElement("div");
+            meta.className = "meta";
+            meta.innerHTML = `<p>${meal.name}</p><p style="color:#666">${meal.weight} — ${meal.price} ₽</p>`;
+            div.appendChild(meta);
+            const btnWrap = document.createElement("div");
+            btnWrap.innerHTML = `<button class="remove" data-key="${item.key}">Удалить</button>`;
+            div.appendChild(btnWrap);
+        } else {
+            const meta = document.createElement("div");
+            meta.className = "meta";
+            meta.innerHTML = `<p>${item.title}</p><p style="color:#888">Не выбрано</p>`;
+            div.appendChild(meta);
+        }
+        container.appendChild(div);
+    });
+    // навесим обработчики удаления
+    container.querySelectorAll(".remove").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const key = btn.dataset.key;
+            const stored2 = readStoredSelection();
+            stored2[key] = "";
+            writeStoredSelection(stored2);
+            renderComposition();
+            renderSelectedPreview();
+        });
+    });
+
+    renderSelectedPreview();
+}
+
+function renderSelectedPreview() {
+    const preview = document.getElementById("selected-preview");
+    preview.innerHTML = "";
+    const stored = readStoredSelection();
+    const lines = [
+        { key: "soup", title: "Суп" },
+        { key: "main", title: "Главное блюдо" },
+        { key: "salad", title: "Салат" },
+        { key: "drink", title: "Напиток" },
+        { key: "dessert", title: "Десерт" }
+    ];
+    let total = 0;
+    lines.forEach(l => {
+        const kw = stored[l.key];
+        const meal = kw ? findMealByKeyword(kw) : null;
+        const row = document.createElement("div");
+        row.className = "line";
+        const leftText = meal ? meal.name : (l.key === "main" ? "Не выбрано" : "Не выбрано");
+        const rightText = meal ? `${meal.price} ₽` : "";
+        if (meal) total += meal.price || 0;
+        row.innerHTML = `<span>${l.title}: ${leftText}</span><span>${rightText}</span>`;
+        preview.appendChild(row);
+    });
+    const totalNode = document.createElement("div");
+    totalNode.style.marginTop = "8px";
+    totalNode.style.fontWeight = "700";
+    totalNode.textContent = `Итого: ${total} ₽`;
+    preview.appendChild(totalNode);
+}
+
+document.getElementById("btn-reset-order").addEventListener("click", () => {
+    // Только форма — не очищаем localStorage автоматически; но по ТЗ это допустимо
+    document.getElementById("place-order-form").reset();
+    document.getElementById("submit-message").textContent = "";
+});
+
+document.getElementById("place-order-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    document.getElementById("submit-message").textContent = "";
+
+    const apiKey = document.getElementById("api-key").value.trim();
+    if (!apiKey) {
+        document.getElementById("submit-message").style.color = "red";
+        document.getElementById("submit-message").textContent = "API Key обязателен.";
+        return;
+    }
+
+    const stored = readStoredSelection();
+    // проверка комбо
+    const combos = [
+      { soup: true, main: true, salad: true, drink: true, dessert: false },
+      { soup: true, main: true, salad: false, drink: true, dessert: false },
+      { soup: false, main: true, salad: true, drink: true, dessert: false },
+      { soup: false, main: true, salad: false, drink: true, dessert: false },
+      { soup: true, main: false, salad: true, drink: true, dessert: false }
+    ];
+    const matches = combos.some(combo => {
+      for (const f of ["soup","main","salad","drink","dessert"]) {
+        if (combo[f] && !stored[f]) return false;
+      }
+      return true;
+    });
+    if (!matches) {
+      document.getElementById("submit-message").style.color = "red";
+      document.getElementById("submit-message").textContent = "Состав заказа не соответствует доступным комбо.";
+      return;
+    }
+
+    // формируем тело запроса
+    const body = {
+      full_name: document.getElementById("full_name").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      subscribe: document.getElementById("subscribe").checked ? 1 : 0,
+      phone: document.getElementById("phone").value.trim(),
+      delivery_address: document.getElementById("address").value.trim(),
+      delivery_type: (document.querySelector('input[name="delivery_type"]:checked') || {}).value === "by_time" ? "by_time" : "now",
+      delivery_time: document.getElementById("delivery_time").value || null,
+      comment: document.getElementById("comment").value || ""
+    };
+
+    // map fields to numeric ids
+    const mapField = {
+      soup: "soup_id",
+      main: "main_course_id",
+      salad: "salad_id",
+      drink: "drink_id",
+      dessert: "dessert_id"
+    };
+
+    for (const key of Object.keys(mapField)) {
+      const kw = stored[key];
+      if (kw) {
+        const meal = findMealByKeyword(kw);
+        if (!meal) {
+          document.getElementById("submit-message").style.color = "red";
+          document.getElementById("submit-message").textContent = `Блюдо ${kw} не найдено в данных API.`;
+          return;
+        }
+        if (meal.numericId === null || meal.numericId === undefined) {
+          document.getElementById("submit-message").style.color = "red";
+          document.getElementById("submit-message").textContent = `У блюда "${meal.name}" нет числового id — отправка невозможна.`;
+          return;
+        }
+        body[mapField[key]] = meal.numericId;
+      } else {
+        body[mapField[key]] = null;
+      }
+    }
+
+    // проверка delivery_time если by_time
+    if (body.delivery_type === "by_time") {
+      if (!body.delivery_time) {
+        document.getElementById("submit-message").style.color = "red";
+        document.getElementById("submit-message").textContent = "Укажите время доставки.";
+        return;
+      }
+      const [hh, mm] = body.delivery_time.split(":").map(Number);
+      if (hh < 7 || hh > 23) {
+        document.getElementById("submit-message").style.color = "red";
+        document.getElementById("submit-message").textContent = "Время доставки должно быть в диапазоне 07:00–23:00.";
+        return;
+      }
+      const now = new Date();
+      const nowMinutes = now.getHours()*60 + now.getMinutes();
+      const selectedMinutes = hh*60 + mm;
+      if (selectedMinutes < nowMinutes) {
+        document.getElementById("submit-message").style.color = "red";
+        document.getElementById("submit-message").textContent = "Время доставки не может быть раньше текущего времени.";
+        return;
+      }
+    }
+
+    // отправка
+    const postUrl = `${API_BASE}/labs/api/orders?api_key=${encodeURIComponent(apiKey)}`;
+    try {
+      const resp = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      if (!resp.ok) {
+        const txt = await resp.text();
+        document.getElementById("submit-message").style.color = "red";
+        document.getElementById("submit-message").textContent = `Ошибка сервера: ${resp.status} ${resp.statusText}. ${txt}`;
+        return;
+      }
+      const json = await resp.json();
+      document.getElementById("submit-message").style.color = "green";
+      document.getElementById("submit-message").textContent = "Заказ успешно оформлен!";
+      // очистим localStorage (только идентификаторы)
+      writeStoredSelection({ soup: "", main: "", salad: "", drink: "", dessert: "" });
+      renderComposition();
+      renderSelectedPreview();
+    } catch (err) {
+      console.error(err);
+      document.getElementById("submit-message").style.color = "red";
+      document.getElementById("submit-message").textContent = "Ошибка отправки заказа. Проверьте соединение / API Key.";
+    }
+});
+
+// инициализация
+(async function init() {
+  await fetchDishes();
+  renderComposition();
+})();
+</script>
 </body>
 </html>
