@@ -15,7 +15,8 @@
     <nav>
         <a href="index.html" class="header_text">О нас</a>
         <a href="MakeLunch.html" class="header_text">Собрать ланч</a>
-        <a href="Order.html" class="header_text">Заказы</a>
+        <a href="Order.html" class="header_text">Оформить заказ</a>
+        <a href="allOrders.html" class="header_text">Заказы</a>
         <a href="#footer" class="header_text">Контакты</a>
     </nav>
 </header>
@@ -204,90 +205,6 @@
 
 </main>
 
-<section class="order-section" aria-labelledby="order-title">
-    <div class="order-container">
-
-        <div class="order-form-block">
-            <h2 id="order-title">Оформить заказ</h2>
-            <form action="https://httpbin.org/post" method="post" id="order-form" novalidate>
-                <div class="order-columns">
-                    <fieldset class="order-col order-items" aria-labelledby="items-title">
-                        <legend id="items-title" class="visually-hidden">Ваш заказ</legend>
-                        <h3 class="col-title">Ваш заказ</h3>
-
-                        <label for="soup-select">Суп</label>
-                        <select id="soup-select" name="soup" required>
-                            <option value="">Выберите суп</option>
-                        </select>
-
-                        <label for="main-select">Главное блюдо</label>
-                        <select id="main-select" name="main_dish" required>
-                            <option value="">Выберите главное блюдо</option>
-                        </select>
-
-                        <label for="salad-select">Салат</label>
-                        <select id="salad-select" name="salad" required>
-                            <option value="">Выберите салат</option>
-                        </select>
-
-                        <label for="drink-select">Напиток</label>
-                        <select id="drink-select" name="drink" required>
-                            <option value="">Выберите напиток</option>
-                        </select>
-
-                        <label for="dessert-select">Десерт</label>
-                        <select id="dessert-select" name="dessert" required>
-                            <option value="">Выберите десерт</option>
-                        </select>
-
-                        <label for="comment">Комментарий к заказу</label>
-                        <textarea id="comment" name="comment" rows="4" placeholder="Добавьте пожелания (при необходимости)"></textarea>
-                    </fieldset>
-
-                    <fieldset class="order-col order-customer" aria-labelledby="customer-title">
-                        <legend id="customer-title" class="visually-hidden">Данные клиента</legend>
-                        <h3 class="col-title">Данные клиента</h3>
-
-                        <label for="customer-name">Имя</label>
-                        <input id="customer-name" name="name" type="text" required placeholder="Иван Иванов">
-
-                        <label for="customer-email">Email</label>
-                        <input id="customer-email" name="email" type="email" required placeholder="ivan@example.com">
-
-                        <div class="checkbox-row">
-                            <label for="subscribe">Подписаться на рассылку</label>
-                            <input id="subscribe" name="subscribe" type="checkbox" checked>
-                        </div>
-
-                        <label for="customer-phone">Телефон</label>
-                        <input id="customer-phone" name="phone" type="tel" required placeholder="+7 900 000 00 00">
-
-                        <label for="customer-address">Адрес доставки</label>
-                        <input id="customer-address" name="address" type="text" required placeholder="Улица, дом, подъезд">
-
-                        <p class="delivery-choice-label">Выберите способ доставки:</p>
-                        <div class="radio-row">
-                            <label for="deliver-now">Доставить как можно быстрее</label>
-                            <input id="deliver-now" name="delivery_mode" type="radio" value="now" required>
-
-                            
-                            <label for="deliver-scheduled">Назначить время</label>
-                            <input id="deliver-scheduled" name="delivery_mode" type="radio" value="scheduled" required>
-                        </div>
-
-                        <label for="delivery-time">Время доставки</label>
-                        <input id="delivery-time" name="delivery_time" type="time" required min="07:00" max="23:00" step="300">
-
-                        <div class="form-buttons">
-                            <button type="reset" class="btn-reset">Сбросить</button>
-                            <button type="submit" class="btn-submit">Отправить заказ</button>
-                        </div>
-                    </fieldset>
-                </div>
-            </form>
-        </div>
-    </div>
-</section>
 
 <footer id="footer">
     <p class="footer_text">Телефон: <a href="tel:+72253457777" class="footer_text">+7 (225) 345-77-77</a></p>
