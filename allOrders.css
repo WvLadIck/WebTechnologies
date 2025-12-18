@@ -169,6 +169,17 @@ textarea.form-control { resize: vertical; }
 }
 .notification.error { background: #b51f1f; }
 
+#footer {
+    background-color: black;
+    color: white;
+    padding: 20px;
+}
+
+.header_text, .footer_text {
+    font-family: "Fira Sans Condensed", sans-serif;
+    font-size: 25px;
+    color: white;
+}
 /* MOBILE */
 @media (max-width: 600px) {
     .form-row { flex-direction: column; }

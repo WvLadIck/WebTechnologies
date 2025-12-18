@@ -1,6 +1,3 @@
-// mealrush.js
-// Управление списком блюд на странице "Собрать ланч"
-// Сохраняет выбор в localStorage и показывает панель перехода к оформлению
 
 const STORAGE_KEY = "mealrush_selected"; // сохраняем объект { soup: keyword, main: keyword, ... }
 const API_BASE = "https://edu.std-900.ist.mospolytech.ru";
@@ -58,7 +55,6 @@ function writeStoredSelection(obj) {
     }
 }
 
-// комбо (на основании ТЗ / ЛР6) — можно корректировать
 const COMBOS = [
     { soup: true, main: true, salad: true, drink: true, dessert: false },
     { soup: true, main: true, salad: false, drink: true, dessert: false },
