@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MealRush — бизнес-ланчи</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: "Fira Sans Condensed", sans-serif;
+    }
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('images/MainPhoto.jpg') center/cover no-repeat;
+      color: white;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+    }
+    .hero h1 {
+      font-size: 3rem;
+    }
+    .feature-icon {
+      font-size: 3rem;
+      color: orange;
+    }
+    footer {
+      background-color: #000;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Навигация -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fs-3" href="index.html">MealRush</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#about">О нас</a></li>
+        <li class="nav-item"><a class="nav-link" href="#features">Преимущества</a></li>
+        <li class="nav-item"><a class="nav-link" href="#cta">Собрать ланч</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contacts">Контакты</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero section -->
+<section class="hero">
+  <div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <h1 class="fw-bold mb-3">Быстрые бизнес-ланчи для вашего офиса</h1>
+        <p class="fs-4 mb-4">MealRush — свежие, вкусные и сбалансированные обеды с доставкой точно в срок</p>
+        <a href="MakeLunch.html" class="btn btn-warning btn-lg">Собрать ланч</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- О компании -->
+<section id="about" class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6 mb-4 mb-md-0">
+        <img src="images/MainPhoto.jpg" class="img-fluid rounded" alt="MealRush">
+      </div>
+      <div class="col-md-6">
+        <h2 class="mb-3">О компании MealRush</h2>
+        <p class="fs-5">
+          Мы доставляем бизнес-ланчи для офисов и команд. Используем только свежие продукты,
+          готовим в день доставки и предлагаем удобный сервис по сборке индивидуального ланча.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Преимущества -->
+<section id="features" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">Наши преимущества</h2>
+    <div class="row text-center g-4">
+      <div class="col-md-4">
+        <div class="p-4 bg-white rounded shadow-sm h-100">
+          <div class="feature-icon mb-3">⚡</div>
+          <h4>Быстрая доставка</h4>
+          <p>Привозим обеды точно к обеденному перерыву.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 bg-white rounded shadow-sm h-100">
+          <div class="feature-icon mb-3">🥗</div>
+          <h4>Сбалансированное меню</h4>
+          <p>Полезные и сытные блюда на каждый день.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 bg-white rounded shadow-sm h-100">
+          <div class="feature-icon mb-3">💼</div>
+          <h4>Для бизнеса</h4>
+          <p>Идеально для офисов, команд и корпоративных клиентов.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta" class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center">
+        <h2 class="mb-3">Готовы заказать бизнес-ланч?</h2>
+        <p class="fs-5 mb-4">Соберите идеальный обед всего за пару минут</p>
+        <a href="MakeLunch.html" class="btn btn-dark btn-lg">Перейти к сборке ланча</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Контакты и форма -->
+<section id="contacts" class="py-5 bg-light">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <h3 class="mb-3">Свяжитесь с нами</h3>
+        <p class="fs-5">Телефон: <a href="tel:+72253457777">+7 (225) 345-77-77</a></p>
+        <p class="fs-5">Email: info@mealrush.ru</p>
+      </div>
+      <div class="col-md-6">
+        <h3 class="mb-3">Форма обратной связи</h3>
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Имя</label>
+            <input type="text" class="form-control" placeholder="Ваше имя">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" placeholder="example@mail.ru">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Сообщение</label>
+            <textarea class="form-control" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-warning">Отправить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-3">
+  <div class="container text-center">
+    <p class="mb-0">© 2025 MealRush. Доставка бизнес-ланчей</p>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Заказы — MealRush</title>
+  <link rel="stylesheet" href="allOrders.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header id="header">
+    <h1>MealRush</h1>
+    <nav>
+            <a href="index.html" class="header_text">О нас</a>
+            <a href="MakeLunch.html" class="header_text">Собрать ланч</a>
+            <a href="Order.html" class="header_text">Оформить заказ</a>
+            <a href="allOrders.html" class="header_text">Заказы</a>
+            <a href="#footer" class="header_text">Контакты</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>История заказов</h2>
+    <div id="orders-root">
+      <table class="orders-table" id="orders-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Дата</th>
+            <th>Состав</th>
+            <th>Стоимость</th>
+            <th>Время доставки</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="orders-body"></tbody>
+      </table>
+      <div id="orders-empty" class="empty" style="display:none">У вас ещё нет заказов.</div>
+    </div>
+  </main>
+    <footer id="footer">
+        <p class="footer_text">
+            Телефон: <a href="tel:+72253457777" class="footer_text">+7 (225) 345-77-77</a>
+        </p>
+    </footer>
+  <template id="modal-template">
+    <div class="modal-backdrop">
+      <div class="modal">
+        <button class="close">×</button>
+        <div class="modal-body"></div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+  // ---------- Настройки API ----------
+  const API_BASE = 'https://edu.std-900.ist.mospolytech.ru';
+  const API_KEY = '71950085-e236-4db2-b3e7-35495a8c084c'; // ваш ключ
+  const ORDERS_URL = API_BASE + '/labs/api/orders';
+
+  // ---------- Утилиты ----------
+  function q(sel, root=document) { return root.querySelector(sel); }
+  function qa(sel, root=document) { return Array.from((root||document).querySelectorAll(sel)); }
+  function fmtDate(iso){ if(!iso) return '-'; const d=new Date(iso); return d.toLocaleString('ru-RU'); }
+  function showNotif(text, isError=false){ const n=document.createElement('div'); n.className='notification'+(isError? ' error':''); n.textContent=text; document.body.appendChild(n); setTimeout(()=>n.remove(),4000); }
+
+  // ---------- Модальные окна (универсальный) ----------
+  function openModal({title='', bodyElem=null, footerElems=[]}){
+    const tpl = document.getElementById('modal-template');
+    const node = tpl.content.cloneNode(true);
+    const backdrop = node.querySelector('.modal-backdrop');
+    const modal = backdrop.querySelector('.modal');
+    if(title){ const h=document.createElement('h3'); h.textContent=title; modal.insertBefore(h, modal.querySelector('.modal-body')); }
+    const close = modal.querySelector('.close');
+    const body = modal.querySelector('.modal-body');
+    const footer = modal.querySelector('.modal-footer');
+    if(bodyElem) body.appendChild(bodyElem);
+    footerElems.forEach(el => footer.appendChild(el));
+    document.body.appendChild(backdrop);
+    close.addEventListener('click', ()=>backdrop.remove());
+    backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) backdrop.remove(); });
+    return {backdrop, modal};
+  }
+
+  // ---------- Загрузка и рендер заказов ----------
+  let orders = [];
+  async function loadOrders(){
+    try{
+      const resp = await fetch(ORDERS_URL + '?api_key=' + API_KEY);
+      const data = await resp.json();
+      if(resp.status===401 || data.error) throw new Error(data.error || 'Неавторизован');
+      // сортировка по created_at desc
+      orders = (Array.isArray(data) ? data : []).slice().sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
+      renderOrders();
+    }catch(err){ console.error(err); showNotif('Ошибка загрузки заказов: '+err.message, true); }
+  }
+
+  function costOf(order){
+    if(order.total_price) return order.total_price + ' ₽';
+    return (order.price ? order.price + ' ₽' : '—');
+  }
+async function orderCost(order){
+  if(!window._dishes){
+    const resp = await fetch(API_BASE + '/labs/api/dishes?api_key=' + API_KEY);
+    window._dishes = await resp.json();
+  }
+
+  let sum = 0;
+
+  const ids = [
+    order.soup_id,
+    order.main_course_id,
+    order.salad_id,
+    order.drink_id,
+    order.dessert_id
+  ];
+
+  ids.forEach(id => {
+    if(id){
+      const dish = window._dishes.find(d => d.id === id);
+      if(dish && dish.price){
+        sum += Number(dish.price);
+      }
+    }
+  });
+
+  return sum;
+}
+
+async function itemsList(order){
+  // загружает блюда один раз и кеширует в window._dishes
+  if(!window._dishes){
+    const resp = await fetch(API_BASE + '/labs/api/dishes?api_key=' + API_KEY);
+    window._dishes = await resp.json();
+  }
+
+  const names = [];
+  const fields = {
+    soup_id: 'soup',
+    main_course_id: 'main_course',
+    salad_id: 'salad',
+    drink_id: 'drink',
+    dessert_id: 'dessert'
+  };
+
+  for(const idKey in fields){
+    if(order[idKey]){
+      const dish = window._dishes.find(d => d.id === order[idKey]);
+      if(dish) names.push(dish.title || dish.name);
+    }
+  }
+
+  return names.length ? names.join(', ') : '-';
+}
+
+
+  function renderOrders(){
+    const tbody = q('#orders-body'); tbody.innerHTML = '';
+    const empty = q('#orders-empty');
+    if(!orders.length){ q('#orders-table').style.display='none'; empty.style.display='block'; return; }
+    q('#orders-table').style.display='table'; empty.style.display='none';
+    orders.forEach((o, idx)=>{
+      const tr = document.createElement('tr');
+      const idxTd = document.createElement('td'); idxTd.textContent = idx+1;
+      const dateTd = document.createElement('td'); dateTd.textContent = fmtDate(o.created_at || o.updated_at || o.created_at);
+      const compTd = document.createElement('td'); itemsList(o).then(name => compTd.textContent = name);
+      const costTd = document.createElement('td'); orderCost(o).then(price => costTd.textContent = price + " ₽");
+      const timeTd = document.createElement('td');
+      if(o.delivery_type === 'by_time' && o.delivery_time) timeTd.textContent = o.delivery_time; else timeTd.textContent = 'Как можно скорее (с 7:00 до 23:00)';
+
+      const actTd = document.createElement('td'); actTd.className='actions';
+      const btnInfo = document.createElement('button'); btnInfo.className='btn-info'; btnInfo.textContent='Подробнее';
+      btnInfo.addEventListener('click', ()=>openViewModal(o));
+      const btnEdit = document.createElement('button'); btnEdit.className='btn-edit'; btnEdit.textContent='Редактировать';
+      btnEdit.addEventListener('click', ()=>openEditModal(o));
+      const btnDel = document.createElement('button'); btnDel.className='btn-del'; btnDel.textContent='Удалить';
+      btnDel.addEventListener('click', ()=>openDeleteModal(o));
+
+      actTd.appendChild(btnInfo); actTd.appendChild(btnEdit); actTd.appendChild(btnDel);
+
+      tr.appendChild(idxTd); tr.appendChild(dateTd); tr.appendChild(compTd); tr.appendChild(costTd); tr.appendChild(timeTd); tr.appendChild(actTd);
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ---------- Модальные реализации ----------
+  function openViewModal(order){
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <div style="line-height:1.6">
+        <b>Номер заказа:</b> ${order.id || '-'}<br>
+        <b>Дата:</b> ${fmtDate(order.created_at)}<br>
+        <b>ФИО:</b> ${order.full_name || '-'}<br>
+        <b>Email:</b> ${order.email || '-'}<br>
+        <b>Телефон:</b> ${order.phone || '-'}<br>
+        <b>Адрес доставки:</b> ${order.delivery_address || '-'}<br>
+        <b>Тип доставки:</b> ${order.delivery_type || '-'}<br>
+        <b>Время доставки:</b> ${(order.delivery_type==='by_time' && order.delivery_time)? order.delivery_time : 'Как можно скорее (с 7:00 до 23:00)'}<br>
+        <b>Комментарий:</b> ${order.comment || '-'}<br>
+        <b>Состав:</b> ${itemsList(order)}<br>
+        <b>Стоимость:</b> ${costOf(order)}
+      </div>
+    `;
+
+    const okBtn = document.createElement('button'); okBtn.textContent='Ок'; okBtn.className='btn-info';
+    const modal = openModal({title:'Информация о заказе', bodyElem:wrapper, footerElems:[okBtn]});
+    okBtn.addEventListener('click', ()=>{ modal.backdrop.remove(); });
+  }
+
+  function openEditModal(order){
+    const form = document.createElement('div');
+    form.innerHTML = `
+      <div class="form-row">
+        <div class="two"><label>ФИО</label><input class="form-control" id="fld_full_name" value="${escapeHtml(order.full_name||'')}"></div>
+        <div class="two"><label>Email</label><input class="form-control" id="fld_email" value="${escapeHtml(order.email||'')}"></div>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <div class="two"><label>Телефон</label><input class="form-control" id="fld_phone" value="${escapeHtml(order.phone||'')}"></div>
+        <div class="two"><label>Адрес доставки</label><input class="form-control" id="fld_address" value="${escapeHtml(order.delivery_address||'')}"></div>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <div class="two"><label>Тип доставки</label>
+          <select id="fld_type" class="form-control">
+            <option value="now">Как можно скорее</option>
+            <option value="by_time">К определённому времени</option>
+          </select>
+        </div>
+        <div class="two"><label>Время доставки (HH:MM)</label><input type="time" class="form-control" id="fld_time" value="${order.delivery_time||''}"></div>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <div class="one"><label>Комментарий</label><textarea id="fld_comment" class="form-control" rows="3">${escapeHtml(order.comment||'')}</textarea></div>
+      </div>
+    `;
+
+    const saveBtn = document.createElement('button'); saveBtn.textContent='Сохранить'; saveBtn.className='btn-edit';
+    const cancelBtn = document.createElement('button'); cancelBtn.textContent='Отмена'; cancelBtn.className='btn-info';
+
+    const modal = openModal({title:'Редактирование заказа', bodyElem:form, footerElems:[cancelBtn, saveBtn]});
+
+    // установить тип
+    q('#fld_type', form).value = order.delivery_type || 'now';
+    function validateTime(val){ if(!val) return false; const [hh,mm] = val.split(':').map(Number); if(isNaN(hh)||isNaN(mm)) return false; if(hh<7 || hh>23) return false; return true; }
+
+    cancelBtn.addEventListener('click', ()=>modal.backdrop.remove());
+
+    saveBtn.addEventListener('click', async ()=>{
+      const payload = {};
+      payload.full_name = q('#fld_full_name', form).value.trim();
+      payload.email = q('#fld_email', form).value.trim();
+      payload.phone = q('#fld_phone', form).value.trim();
+      payload.delivery_address = q('#fld_address', form).value.trim();
+      payload.delivery_type = q('#fld_type', form).value;
+      payload.comment = q('#fld_comment', form).value.trim();
+      const timeVal = q('#fld_time', form).value;
+      if(payload.delivery_type === 'by_time'){
+        if(!timeVal){ showNotif('Выберите время доставки при delivery_type=by_time', true); return; }
+        if(!validateTime(timeVal)){ showNotif('Время доставки должно быть в диапазоне 07:00–23:00', true); return; }
+        payload.delivery_time = timeVal;
+      } else {
+        payload.delivery_time = null; // явно снимаем
+      }
+
+      // отправка PUT
+      try{
+        saveBtn.disabled = true;
+        const resp = await fetch(ORDERS_URL + '/' + encodeURIComponent(order.id) + '?api_key=' + API_KEY, {
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const res = await resp.json();
+        if(!resp.ok){ throw new Error(res.error || JSON.stringify(res)); }
+        // обновим локально
+        const idx = orders.findIndex(x=>String(x.id)===String(order.id));
+        if(idx!==-1) orders[idx] = res;
+        renderOrders();
+        modal.backdrop.remove();
+        showNotif('Заказ успешно изменён');
+      }catch(err){ console.error(err); showNotif('Ошибка при сохранении: '+err.message, true); }
+      finally{ saveBtn.disabled = false; }
+    });
+  }
+
+  function openDeleteModal(order){
+    const content = document.createElement('div');
+    content.innerHTML = `<div>Вы уверены, что хотите удалить заказ <b>#${order.id}</b>?</div>`;
+    const yes = document.createElement('button'); yes.textContent='Да'; yes.className='btn-del';
+    const no = document.createElement('button'); no.textContent='Отмена'; no.className='btn-info';
+
+    const modal = openModal({title:'Подтверждение удаления', bodyElem:content, footerElems:[no, yes]});
+
+    no.addEventListener('click', ()=>modal.backdrop.remove());
+    yes.addEventListener('click', async ()=>{
+      try{
+        yes.disabled = true;
+        const resp = await fetch(ORDERS_URL + '/' + encodeURIComponent(order.id) + '?api_key=' + API_KEY, { method:'DELETE' });
+        const res = await resp.json();
+        if(!resp.ok){ throw new Error(res.error || JSON.stringify(res)); }
+        // удалить локально
+        orders = orders.filter(x=>String(x.id)!==String(order.id));
+        renderOrders();
+        modal.backdrop.remove();
+        showNotif('Заказ удалён');
+      }catch(err){ console.error(err); showNotif('Ошибка при удалении: '+err.message, true); }
+      finally{ yes.disabled = false; }
+    });
+  }
+
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  document.addEventListener('DOMContentLoaded', ()=>{ loadOrders(); });
+  </script>
+</body>
+</html>
